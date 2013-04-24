@@ -1,0 +1,14 @@
+Released to the Public Domain by Orion Sky Lawlor 2012-02-20
+
+"Public Domain" means you *can* freely:
+	- Run, copy, modify, and redistribute the code.
+	- Chop out bits of the code for use in your own projects.
+	- Incorporate the code into commercial projects.
+	- Incorporate the code into GPL or other open-source projects.
+	- Sue the author for any reason, or no reason whatsoever.
+
+All that, and I won't do a thing to stop you!
+
+By using this code, you agree to not a darn thing.
+
+I'd love to hear how you use it though, so email me at olawlor@acm.org!
