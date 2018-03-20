@@ -8,7 +8,9 @@
  In AVX, a "floats" has 8 individual floats.
 
  For a bigger but more full-featured implementation, see
- Intel's Array Building Blocks (ArBB) "f32" class.
+ Agner Fog's vector class http://www.agner.org/optimize/#vectorclass
+   with http://software-lisc.fbk.eu/avx_mathfun/ trig.
+ or Intel's Array Building Blocks (ArBB) "f32" library.
 
  Dr. Orion Lawlor, lawlor@alaska.edu, 2012-10-22 (public domain)
 */

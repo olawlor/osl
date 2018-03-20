@@ -1,9 +1,13 @@
 /**
  Aligned memory allocator, for use with std::vector and AVX (and such).
+
+ Use it to allocate a std::vector for AVX floats like this:
+	std::vector<float, alignocator<float,32> >   myVec;
  
  Allocator part taken directly from "alignocator", by the Visual C++ team:
     http://blogs.msdn.com/b/vcblog/archive/2008/08/28/the-alignocator.aspx
 
+ Dr. Orion Lawlor, lawlor@alaska.edu, 2018-03-20 (Public Domain)
 */
 #ifndef __OSL_ALIGNOCATOR_H
 #define __OSL_ALIGNOCATOR_H
