@@ -1,4 +1,4 @@
-Released to the Public Domain by Orion Sky Lawlor 2012-02-20
+Released to the Public Domain by Orion Sky Lawlor 2018-05-01
 
 "Public Domain" means you *can* freely:
 	- Run, copy, modify, and redistribute the code.
@@ -9,6 +9,12 @@ Released to the Public Domain by Orion Sky Lawlor 2012-02-20
 
 All that, and I won't do a thing to stop you!
 
-By using this code, you agree to not a darn thing.
+By using this code, you agree to not a darn thing.  
 
-I'd love to hear how you use it though, so email me at olawlor@acm.org!
+The code, of course, has bugs. It is not perfect. Even its bugs have bugs.  
+
+I'd love to hear how you use it, so email me at lawlor@alaska.edu
+
+WARNING: THIS SOFTWARE LICENSE MAY INCLUDE SENTENCES IN ALL CAPITALS.
+IT IS NOT CLEAR WHY THESE SENTENCES EVEN EXIST, MUCH LESS WHY THEY
+ARE IN CAPITAL LETTERS, OR WHAT THAT MAY SIGNIFY.  BUT HERE THEY ARE.
