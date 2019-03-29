@@ -22,6 +22,7 @@
 #include <immintrin.h> /* Intel's AVX intrinsics header */
 
 class floats; // forward declaration
+class ints; 
 
 // One set of boolean values
 class bools {
@@ -46,6 +47,8 @@ public:
 	
 	/* Use masking to combine the then_part (for true bools) and else part (for false bools). */
 	floats if_then_else(const floats &then,const floats &else_part) const; 
+	ints   if_then_else(const ints   &then,const ints   &else_part) const; 
+	
 	/* Return trueval if we're true, or zero if we're false. */
 	floats this_or_zero(const floats &trueval) const;
 	floats zero_or_this(const floats &falseval) const;
@@ -205,7 +208,7 @@ public:
 	/* Extract our value as floats (simple integer conversion) */
 	floats value_to_floats(void) const {return _mm256_cvtepi32_ps(get());}
 
-#if 0 /* Supposedly AVX2 (Haswell New Instructions) will support integer operations on mm256 */
+#if 0 /* Should add support for AVX2 (Haswell New Instructions) integer operations on mm256 */
 	... _mm256_add_epi32 ...
 #else /* Fake the above instructions by breaking AVX down to SSE halves */
 
@@ -228,6 +231,7 @@ public:
 	ints operator&=(const ints &rhs) {TWO_PIECES(_mm_and_si128,,rhs.); return *this; }
 	ints operator|=(const ints &rhs) {TWO_PIECES(_mm_or_si128,,rhs.); return *this; }
 	ints operator^=(const ints &rhs) {TWO_PIECES(_mm_xor_si128,,rhs.); return *this; }
+	ints operator~() const { const static ints all_ones(-1); return (*this)^all_ones; }
 	
 #define TWO_PIECES_Rscalar(operation,left,right) \
 	L=operation(left L,right); \
@@ -252,6 +256,11 @@ public:
 };
 
 
+ints bools::if_then_else(const ints   &then,const ints   &else_part) const
+{
+  ints mask; mask.from_bools(*this);
+  return (then & mask) | (else_part & ~mask);
+}
 
 
 #elif defined(__SSE__) /* SSE implementation of above */
@@ -260,6 +269,7 @@ public:
 #include <emmintrin.h> /* Intel's SSE2 intrinsics header */
 
 class floats; // forward declaration
+class ints;
 
 // One set of boolean values
 class bools {
@@ -280,6 +290,7 @@ public:
 	
 	/* Use masking to combine the then_part (for true bools) and else part (for false bools). */
 	floats if_then_else(const floats &then,const floats &else_part) const; 
+  ints   if_then_else(const ints   &then,const ints   &else_part) const;
 
 	/* Return trueval if we're true, or zero if we're false. */
 	floats this_or_zero(const floats &trueval) const;
@@ -441,6 +452,7 @@ public:
 	ints operator&(const ints &rhs) const {return _mm_and_si128(v,rhs.v);}
 	ints operator|(const ints &rhs) const {return _mm_or_si128(v,rhs.v);}
 	ints operator^(const ints &rhs) const {return _mm_xor_si128(v,rhs.v);}
+	ints operator~() const { const static ints all_ones(-1); return (*this)^all_ones; }
 	ints operator<<(const int count) const {return _mm_slli_epi32(v,count);}
 	ints operator>>(const int count) const {return _mm_srli_epi32(v,count);}
 	ints operator<<(ints counts) const {return _mm_sll_epi32(v,counts.v);}
@@ -455,6 +467,15 @@ public:
 		return o;
 	}
 };
+
+ints bools::if_then_else(const ints   &then,const ints   &else_part) const
+{
+  ints mask; mask.from_bools(*this);
+  return (then & mask) | (else_part & ~mask);
+}
+
+
+
 #endif /* SSE2 */
 
 #else /* FIXME: altivec, etc */
