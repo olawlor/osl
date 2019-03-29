@@ -23,12 +23,10 @@
 #include <string>            // For string
 #include <exception>         // For exception class
 
-using namespace std;
-
 /**
  *   Signals a problem with the execution of a socket call.
  */
-class SocketException : public exception {
+class SocketException : public std::exception {
 public:
   /**
    *   Construct a SocketException with a explanatory message.
@@ -36,7 +34,7 @@ public:
    *   @param incSysMsg true if system message (from strerror(errno))
    *   should be postfixed to the user provided message
    */
-  SocketException(const string &message, bool inclSysMsg = false) throw();
+  SocketException(const std::string &message, bool inclSysMsg = false) throw();
 
   /**
    *   Provided just to guarantee that no exceptions are thrown.
@@ -50,7 +48,7 @@ public:
   const char *what() const throw();
 
 private:
-  string userMessage;  // Exception message
+  std::string userMessage;  // Exception message
 };
 
 /**
@@ -68,7 +66,7 @@ public:
    *   @return local address of socket
    *   @exception SocketException thrown if fetch fails
    */
-  string getLocalAddress();
+  std::string getLocalAddress();
 
   /**
    *   Get the local port
@@ -93,7 +91,7 @@ public:
    *   @param localPort local port
    *   @exception SocketException thrown if setting local port or address fails
    */
-  void setLocalAddressAndPort(const string &localAddress, 
+  void setLocalAddressAndPort(const std::string &localAddress, 
     unsigned short localPort = 0);
 
   /**
@@ -117,8 +115,8 @@ public:
    *   @param service service to resolve (e.g., "http")
    *   @param protocol protocol of service to resolve.  Default is "tcp".
    */
-  static unsigned short resolveService(const string &service,
-                                       const string &protocol = "tcp");
+  static unsigned short resolveService(const std::string &service,
+                                       const std::string &protocol = "tcp");
 
 private:
   // Prevent the user from trying to use value semantics on this object
@@ -143,7 +141,7 @@ public:
    *   @param foreignPort foreign port
    *   @exception SocketException thrown if unable to establish connection
    */
-  void connect(const string &foreignAddress, unsigned short foreignPort)
+  void connect(const std::string &foreignAddress, unsigned short foreignPort)
    ;
 
   /**
@@ -170,7 +168,7 @@ public:
    *   @return foreign address
    *   @exception SocketException thrown if unable to fetch foreign address
    */
-  string getForeignAddress();
+  std::string getForeignAddress();
 
   /**
    *   Get the foreign port.  Call connect() before calling recv()
@@ -202,7 +200,7 @@ public:
    *   @param foreignPort foreign port
    *   @exception SocketException thrown if unable to create TCP socket
    */
-  TCPSocket(const string &foreignAddress, unsigned short foreignPort) 
+  TCPSocket(const std::string &foreignAddress, unsigned short foreignPort) 
      ;
 
 private:
@@ -237,7 +235,7 @@ public:
    *                   connection requests (default 5)
    *   @exception SocketException thrown if unable to create TCP server socket
    */
-  TCPServerSocket(const string &localAddress, unsigned short localPort,
+  TCPServerSocket(const std::string &localAddress, unsigned short localPort,
       int queueLen = 5);
 
   /**
@@ -275,7 +273,7 @@ public:
    *   @param localPort local port
    *   @exception SocketException thrown if unable to create UDP socket
    */
-  UDPSocket(const string &localAddress, unsigned short localPort) 
+  UDPSocket(const std::string &localAddress, unsigned short localPort) 
      ;
 
   /**
@@ -295,7 +293,7 @@ public:
    *   @return true if send is successful
    *   @exception SocketException thrown if unable to send datagram
    */
-  void sendTo(const void *buffer, int bufferLen, const string &foreignAddress,
+  void sendTo(const void *buffer, int bufferLen, const std::string &foreignAddress,
             unsigned short foreignPort);
 
   /**
@@ -308,7 +306,7 @@ public:
    *   @return number of bytes received and -1 for error
    *   @exception SocketException thrown if unable to receive datagram
    */
-  int recvFrom(void *buffer, int bufferLen, string &sourceAddress, 
+  int recvFrom(void *buffer, int bufferLen, std::string &sourceAddress, 
                unsigned short &sourcePort);
 
   /**
@@ -323,14 +321,14 @@ public:
    *   @param multicastGroup multicast group address to join
    *   @exception SocketException thrown if unable to join group
    */
-  void joinGroup(const string &multicastGroup);
+  void joinGroup(const std::string &multicastGroup);
 
   /**
    *   Leave the specified multicast group
    *   @param multicastGroup multicast group address to leave
    *   @exception SocketException thrown if unable to leave group
    */
-  void leaveGroup(const string &multicastGroup);
+  void leaveGroup(const std::string &multicastGroup);
 
 private:
   void setBroadcast();
