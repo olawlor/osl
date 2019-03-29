@@ -1,4 +1,12 @@
 /*
+ Original by Jeff_Donahoo@Baylor.edu
+    https://cs.baylor.edu/~donahoo/practical/CSockets/practical/
+
+ Slightly updated by Dr. Orion Lawlor, lawlor@alaska.edu
+   - Remove exception specifications
+   - Remove 'using namespace std'
+   - Add SO_REUSEADDR to TCP server sockets by default
+
  *   C++ sockets on Unix and Windows
  *   Copyright (C) 2002
  *
