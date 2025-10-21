@@ -263,10 +263,14 @@ ints bools::if_then_else(const ints   &then,const ints   &else_part) const
 }
 
 
-#elif defined(__SSE__) /* SSE implementation of above */
+#elif defined(__SSE__) || defined(__ARM_NEON) /* SSE implementation of above */
 /********************** 4-float SSE version ***********************/
 
-#include <emmintrin.h> /* Intel's SSE2 intrinsics header */
+#ifdef __ARM_NEON
+#  include "sse2neon.h" /* from https://github.com/DLTcollab/sse2neon/ */
+#else /* Intel SSE */
+#  include <emmintrin.h> /* Intel's SSE2 intrinsics header */
+#endif
 
 class floats; // forward declaration
 class ints;
@@ -387,9 +391,19 @@ public:
 };
 
 inline floats bools::if_then_else(const floats &trueval,const floats &falseval) const {
+#if defined(__ARM_NEON) 
+	// Use the vbslq intrinsic to do this in one instruction
+	return vreinterpretq_m128_f32(
+		vbslq_f32(vreinterpretq_u32_m128(v),
+			vreinterpretq_f32_m128(trueval.get()),
+			vreinterpretq_f32_m128(falseval.get())
+		)
+	);
+#else
 	return _mm_or_ps( _mm_and_ps(v,trueval.get()),
 		 _mm_andnot_ps(v, falseval.get())
 	);
+#endif
 }
 inline floats bools::this_or_zero(const floats &trueval) const {
 	return _mm_and_ps(v,trueval.get());
@@ -407,7 +421,7 @@ inline floats min(const floats &a,const floats &b) {
 inline floats sqrt(const floats &v) {return _mm_sqrt_ps(v.get());}
 inline floats rsqrt(const floats &v) {return _mm_rsqrt_ps(v.get());}
 
-#if defined(__SSE2__) 
+#if defined(__SSE2__) || defined(__ARM_NEON)
 /** One set of integer values.  These aren't much good for arithmetic, but
    they're useful for exponent manipulation stuff. */
 class ints {
@@ -443,10 +457,10 @@ public:
 	friend ints operator-(const ints &lhs,const ints &rhs)
 		{return _mm_sub_epi32(lhs.v,rhs.v);}
 	friend ints operator*(const ints &lhs,const ints &rhs)
-		{return _mm_mul_epu32(lhs.v,rhs.v);}
+		{return _mm_mullo_epi32(lhs.v,rhs.v);}
 	ints operator+=(const ints &rhs) {v=_mm_add_epi32(v,rhs.v); return *this; }
 	ints operator-=(const ints &rhs) {v=_mm_sub_epi32(v,rhs.v); return *this; }
-	ints operator*=(const ints &rhs) {v=_mm_mul_epu32(v,rhs.v); return *this; }
+	ints operator*=(const ints &rhs) {v=_mm_mullo_epi32(v,rhs.v); return *this; }
 	
 	/* Bitwise operators */
 	ints operator&(const ints &rhs) const {return _mm_and_si128(v,rhs.v);}
@@ -454,9 +468,11 @@ public:
 	ints operator^(const ints &rhs) const {return _mm_xor_si128(v,rhs.v);}
 	ints operator~() const { const static ints all_ones(-1); return (*this)^all_ones; }
 	ints operator<<(const int count) const {return _mm_slli_epi32(v,count);}
-	ints operator>>(const int count) const {return _mm_srli_epi32(v,count);}
+	ints operator>>(const int count) const {return _mm_srai_epi32(v,count);}
+#ifndef __ARM_NEON
 	ints operator<<(ints counts) const {return _mm_sll_epi32(v,counts.v);}
-	ints operator>>(ints counts) const {return _mm_srl_epi32(v,counts.v);}
+	ints operator>>(ints counts) const {return _mm_sra_epi32(v,counts.v);}
+#endif
 	
 	/* Extract one int from our set.  index must be between 0 and 3 */
 	int &operator[](int index) { return ((int *)&v)[index]; }
@@ -468,15 +484,25 @@ public:
 	}
 };
 
-ints bools::if_then_else(const ints   &then,const ints   &else_part) const
+inline ints bools::if_then_else(const ints   &trueval,const ints   &falseval) const
 {
+#if defined(__ARM_NEON) 
+	// Use the vbslq intrinsic to do this in one instruction
+	return vreinterpretq_m128i_s32(
+		vbslq_s32(vreinterpretq_u32_m128(v),
+			vreinterpretq_s32_m128i(trueval.get()),
+			vreinterpretq_s32_m128i(falseval.get())
+		)
+	);
+#else
   ints mask; mask.from_bools(*this);
-  return (then & mask) | (else_part & ~mask);
+  return (trueval & mask) | (falseval & ~mask);
+#endif
 }
 
-
-
 #endif /* SSE2 */
+
+
 
 #else /* FIXME: altivec, etc */
 #error "You need some sort of SSE or AVX intrinsics for osl/floats.h to work."
